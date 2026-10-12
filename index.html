@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08090b">
+<title>ORVYNT — Твой выбор</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark}
+body{margin:0;background:#08090b;color:#f4f4f6;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
+.hero{min-height:100svh;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:26px 22px 24px;text-align:center}
+.metal{position:absolute;z-index:-2;inset:-25%;background:radial-gradient(ellipse at 25% 25%,#d9dce366,transparent 16%),radial-gradient(ellipse at 70% 45%,#7d879488,transparent 18%),radial-gradient(ellipse at 40% 75%,#e9edf155,transparent 17%),conic-gradient(from 30deg at 50% 50%,#070809,#68717c,#12151a,#d3d7dd,#17191e,#8d949e,#070809);filter:blur(22px) contrast(1.4);animation:liquid 22s ease-in-out infinite alternate}
+.metal:after{content:"";position:absolute;inset:0;background:repeating-radial-gradient(ellipse at 50% 50%,transparent 0 35px,#ffffff12 37px,#050608aa 43px,transparent 52px);transform:rotate(-18deg) scale(1.4)}
+.shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(180deg,#05060866 0%,#05060812 35%,#05060855 60%,#050608f5 100%)}
+@keyframes liquid{from{transform:rotate(-8deg) scale(1)}to{transform:rotate(12deg) scale(1.15) translate(2%,-2%)}}
+.top{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.brand{letter-spacing:4px;font-size:17px}.sub{font-size:10px;color:#b8bbc2;margin-top:4px;letter-spacing:1px}
+.menu{font-size:23px;border:1px solid #ffffff30;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;background:#ffffff0b}
+.product{width:min(72vw,275px);height:clamp(245px,36vh,350px);margin:25px 0 22px;position:relative;display:grid;place-items:center;animation:float 7s ease-in-out infinite}
+.phone{position:relative;width:72%;height:96%;border:2px solid #b8bec7;border-radius:34px;background:linear-gradient(135deg,#8e96a1,#191c22 25%,#050607 75%,#7e8792);padding:7px;transform:rotate(-8deg);box-shadow:0 24px 65px #000d,0 0 35px #c7ced422}
+.phone:before{content:"";position:absolute;z-index:2;top:12px;left:50%;transform:translateX(-50%);width:74px;height:17px;border-radius:20px;background:#020304}
+.phone-screen{height:100%;border-radius:27px;background:linear-gradient(150deg,#2e333c,#07080a 58%,#4b515b);display:flex;align-items:flex-start;padding:38px 13px;gap:10px;box-shadow:inset 0 0 25px #000}
+.camera{width:100%;aspect-ratio:1;border-radius:19px;padding:10px;background:linear-gradient(135deg,#15171b,#3a4049,#08090b);display:grid;grid-template-columns:1fr 1fr;gap:9px;box-shadow:0 0 0 1px #9097a188}
+.lens{aspect-ratio:1;border-radius:50%;border:4px solid #252a32;background:radial-gradient(circle at 35% 30%,#b9c7d9,#263449 25%,#030507 68%);box-shadow:0 0 0 1px #9da4af}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+h1{font-size:clamp(37px,10vw,49px);font-weight:500;letter-spacing:7px;margin:0}
+.tagline{font-size:12px;letter-spacing:2px;color:#d1d3d8;margin:10px 0 24px}
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;margin-bottom:19px}
+.feature{border:1px solid #ffffff25;border-radius:16px;padding:13px 3px;background:#ffffff0a;backdrop-filter:blur(14px);font-size:10px;line-height:1.4;color:#e1e2e6}
+.feature b{display:block;font-size:19px;margin-bottom:5px;font-weight:400}
+.cta{width:100%;display:flex;justify-content:center;align-items:center;gap:14px;padding:17px 12px;border:1px solid #fff;border-radius:40px;background:linear-gradient(110deg,#666e79,#e7e9ed,#777f8a);color:#090a0c;text-decoration:none;font-size:15px;font-weight:600;box-shadow:0 0 26px #c8d0dd35}
+.hint{margin-top:19px;color:#b1b4bb;font-size:9px;letter-spacing:3px}
+.catalog{padding:38px 20px;background:#0b0c0f}
+.catalog h2{font-weight:500;letter-spacing:1px}
+.catalog p{color:#aeb2bb;font-size:14px}
+@media(min-height:800px){.hero{justify-content:center}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important}}
+</style>
+</head>
+<body>
+<main class="hero">
+<div class="metal"></div><div class="shade"></div>
+<header class="top"><div><div class="brand">ORVYNT</div><div class="sub">TELEGRAM MINI APP</div></div><div class="menu">☰</div></header>
+<div class="product" aria-label="Концепция iPhone"><div class="phone"><div class="phone-screen"><div class="camera"><div class="lens"></div><div class="lens"></div><div class="lens"></div></div></div></div></div>
+<h1>ORVYNT</h1>
+<p class="tagline">Твой выбор. Твой ORVYNT.</p>
+<div class="features"><div class="feature"><b>◇</b>Оригинальная<br>техника</div><div class="feature"><b>↗</b>Быстрая<br>доставка</div><div class="feature"><b>◉</b>Поддержка<br>24/7</div></div>
+<a class="cta" href="#catalog">Открыть магазин <span>→</span></a>
+<div class="hint">ПРОКРУТИТЕ ВНИЗ　⌄</div>
+</main>
+<section class="catalog" id="catalog"><h2>Каталог ORVYNT</h2><p>Скоро здесь появятся модели iPhone.</p></section>
+</body>
+</html>
