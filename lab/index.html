@@ -67,9 +67,14 @@
     </main>
     <footer><span>VADOSIX LAB — EXPERIMENT 001</span><span>Built for the small screen, too.</span></footer>
   </div>
-  <script>
+  <script type="module">
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const items = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+
+    // Native fallback keeps the page usable if the animation module cannot load.
+    const revealFallback = () => items.forEach(item => item.classList.add('visible'));
+
+    if (!reduceMotion && 'IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -77,10 +82,52 @@
             observer.unobserve(entry.target);
           }
         });
-      }, {threshold: 0.12});
+      }, { threshold: 0.12 });
       items.forEach(item => observer.observe(item));
     } else {
-      items.forEach(item => item.classList.add('visible'));
+      revealFallback();
+    }
+
+    if (!reduceMotion) {
+      try {
+        const { animate, inView, hover } = await import('https://cdn.jsdelivr.net/npm/motion@12.23.12/+esm');
+
+        // Animate each section when it enters the viewport.
+        document.querySelectorAll('.reveal').forEach((element, index) => {
+          element.classList.remove('visible');
+          inView(element, () => {
+            animate(element,
+              { opacity: [0, 1], y: [22, 0] },
+              { duration: 0.7, delay: Math.min(index * 0.06, 0.24), ease: [0.22, 0.75, 0.25, 1] }
+            );
+          }, { amount: 0.12 });
+        });
+
+        // Subtle lift on cards; no hover-only functionality is required to use them.
+        document.querySelectorAll('.card').forEach(card => {
+          hover(card, () => {
+            const controls = animate(card, { y: -5, scale: 1.008 }, { duration: 0.22, ease: 'easeOut' });
+            return () => animate(card, { y: 0, scale: 1 }, { duration: 0.24, ease: 'easeOut' });
+          });
+        });
+
+        // Gentle magnetic response for the main CTA on pointer devices.
+        const cta = document.querySelector('.btn.primary');
+        if (cta && window.matchMedia('(pointer: fine)').matches) {
+          cta.addEventListener('pointermove', event => {
+            const rect = cta.getBoundingClientRect();
+            const x = (event.clientX - rect.left - rect.width / 2) * 0.08;
+            const y = (event.clientY - rect.top - rect.height / 2) * 0.08;
+            animate(cta, { x, y }, { duration: 0.18, ease: 'easeOut' });
+          });
+          cta.addEventListener('pointerleave', () => {
+            animate(cta, { x: 0, y: 0 }, { duration: 0.35, ease: [0.22, 0.75, 0.25, 1] });
+          });
+        }
+      } catch (error) {
+        // If the CDN is unavailable, reveal the content with CSS instead.
+        revealFallback();
+      }
     }
   </script>
 </body>
