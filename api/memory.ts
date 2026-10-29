@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { neon } from "@neondatabase/serverless";
-import { sessionFromCookie } from "../lib/session";
+import { sessionFromCookie } from "../lib/session.js";
 
 function db() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not configured");
