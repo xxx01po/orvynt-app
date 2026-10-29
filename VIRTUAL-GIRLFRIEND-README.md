@@ -37,9 +37,9 @@ Never commit real secrets or put them in frontend code. `.env.example` contains 
 
 - No user account / password authentication yet. Anonymous sessions persist in the same browser through an HttpOnly cookie; cross-device sync is not implemented.
 - The CSS portrait is a temporary stylized placeholder, not a photorealistic rigged 3D avatar.
-- Voice input/output, lip sync, push notifications, and real-time streaming are not implemented yet.
+- Browser speech input/output is implemented when the user's browser supports it; native voice provider integration, lip sync, push notifications, and real-time streaming are not implemented yet.
 - API rate limiting currently uses database buckets; add managed WAF/Redis limits and provider spend caps before public launch.
-- The project is not production-ready until the database and secrets are configured, deployed, and tested.
+- The public site is deployed. The PostgreSQL database and signed sessions are configured. Real AI replies remain disabled until an `LLM_API_KEY` is added in Vercel; then redeploy and test `/api/health` and a real chat turn. The avatar is currently a stylized CSS prototype, not a photorealistic character.
 
 ## Privacy
 
