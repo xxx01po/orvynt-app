@@ -24,8 +24,8 @@ A mobile-first Russian-language virtual companion prototype with an iPhone-frien
    - `DATABASE_URL`: database connection string.
    - `SESSION_SECRET`: a random secret of at least 32 characters.
    - `LLM_API_KEY`: provider API key.
-   - `LLM_BASE_URL`: API base URL, e.g. `https://api.openai.com/v1`.
-   - `LLM_MODEL`: exact model identifier supported by the selected provider.
+   - `LLM_BASE_URL`: API base URL, default: `https://openrouter.ai/api/v1` for OpenRouter, or another compatible provider.
+   - `LLM_MODEL`: exact model identifier supported by the selected provider; OpenRouter's `openrouter/free` router can be used for testing, subject to free-model availability and rate limits.
    - Optional `ALLOWED_ORIGINS`: comma-separated exact origins; normally leave unset for same-origin hosting.
 5. Redeploy after setting environment variables.
 6. Open `/api/health`; the booleans should be true for database, session secret, and model configuration.
