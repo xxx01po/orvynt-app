@@ -7,6 +7,7 @@ function db() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not configured");
   return neon(process.env.DATABASE_URL);
 }
+// Keep relative imports explicit for Node.js ESM runtime.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
   const origin = req.headers.origin;
