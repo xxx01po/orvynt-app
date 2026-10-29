@@ -8,6 +8,13 @@ function db() {
 }
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
+  const origin = req.headers.origin;
+  if (origin) {
+    const allowed = (process.env.ALLOWED_ORIGINS || "").split(",").map(x => x.trim()).filter(Boolean);
+    const host = req.headers.host;
+    const expected = `${req.headers["x-forwarded-proto"] || "https"}://${host}`;
+    if (allowed.length ? !allowed.includes(origin) : origin !== expected) return res.status(403).json({ error: "Недопустимый источник запроса." });
+  }
   const sessionId = sessionFromCookie(req.headers.cookie);
   if (!sessionId) return res.status(401).json({ error: "Сессия не найдена." });
   try {
