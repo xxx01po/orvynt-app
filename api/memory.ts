@@ -23,13 +23,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const rows = await sql`SELECT id, fact, created_at FROM vg_memories WHERE session_id = ${sessionId}::uuid ORDER BY created_at DESC LIMIT 100`;
       return res.status(200).json({ memories: rows });
     }
+    if (req.method === "PATCH") {
+      const id = Number(req.body?.id);
+      const fact = typeof req.body?.fact === "string" ? req.body.fact.trim() : "";
+      if (!Number.isSafeInteger(id) || id < 1 || !fact || fact.length > 250) return res.status(400).json({ error: "Укажите id и текст факта до 250 символов." });
+      await sql`UPDATE vg_memories SET fact = ${fact} WHERE id = ${id} AND session_id = ${sessionId}::uuid`;
+      return res.status(200).json({ ok: true });
+    }
     if (req.method === "DELETE") {
       const id = Number(req.body?.id);
       if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: "Укажите корректный id записи." });
       await sql`DELETE FROM vg_memories WHERE id = ${id} AND session_id = ${sessionId}::uuid`;
       return res.status(200).json({ ok: true });
     }
-    res.setHeader("Allow", "GET, DELETE");
+    res.setHeader("Allow", "GET, PATCH, DELETE");
     return res.status(405).json({ error: "Method not allowed" });
   } catch (error) {
     console.error("memory request failed", error instanceof Error ? error.message : "unknown");
