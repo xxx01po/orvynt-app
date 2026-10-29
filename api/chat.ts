@@ -62,7 +62,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         model: process.env.LLM_MODEL,
         temperature: 0.85,
         max_tokens: 500,
-        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: systemPrompt + "\n" + memoryText },
           ...history,
