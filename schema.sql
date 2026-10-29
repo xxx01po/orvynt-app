@@ -21,3 +21,12 @@ CREATE TABLE IF NOT EXISTS vg_memories (
   UNIQUE(session_id, fact)
 );
 CREATE INDEX IF NOT EXISTS vg_memories_session_idx ON vg_memories(session_id, created_at DESC);
+
+-- Store only HMAC-derived client keys, never raw IP addresses.
+CREATE TABLE IF NOT EXISTS vg_rate_limits (
+  bucket_key TEXT NOT NULL,
+  window_start TIMESTAMPTZ NOT NULL,
+  request_count INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (bucket_key, window_start)
+);
+CREATE INDEX IF NOT EXISTS vg_rate_limits_window_idx ON vg_rate_limits(window_start);
