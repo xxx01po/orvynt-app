@@ -38,3 +38,7 @@ export function sessionFromCookie(header: string | undefined): string | null {
   const b = Buffer.from(expected, "hex");
   return a.length === b.length && timingSafeEqual(a, b) ? id : null;
 }
+
+export function rateLimitKey(input: string): string {
+  return createHmac("sha256", secret()).update("rate:" + input).digest("hex");
+}
