@@ -1,0 +1,17 @@
+{
+  "name": "virtual-girlfriend-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mobile-first Virtual Girlfriend AI prototype",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@vercel/node": "^5.3.9",
+    "typescript": "^5.8.3"
+  }
+}
