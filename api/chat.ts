@@ -81,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       parsed = JSON.parse(raw);
     } catch {
-      const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
       if (!jsonMatch) return res.status(502).json({ error: "Не удалось обработать ответ ИИ." });
       try { parsed = JSON.parse(jsonMatch[0]); }
       catch { return res.status(502).json({ error: "Не удалось обработать ответ ИИ." }); }
