@@ -19,9 +19,18 @@ function originAllowed(req: VercelRequest): boolean {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Cache-Control", "no-store");
   if (!originAllowed(req)) return res.status(403).json({ error: "Недопустимый источник запроса." });
-  if (req.method !== "POST") { res.setHeader("Allow", "POST"); return res.status(405).json({ error: "Method not allowed" }); }
   const sessionId = sessionFromCookie(req.headers.cookie);
   if (!sessionId) return res.status(401).json({ error: "Сессия не найдена. Обновите страницу." });
+  if (req.method === "GET") {
+    try {
+      const rows = await db()`SELECT role, content, emotion, created_at FROM vg_messages WHERE session_id = ${sessionId}::uuid ORDER BY created_at ASC LIMIT 100`;
+      return res.status(200).json({ messages: rows });
+    } catch (error) {
+      console.error("chat history failed", error instanceof Error ? error.message : "unknown");
+      return res.status(503).json({ error: "История пока недоступна. Проверьте базу данных." });
+    }
+  }
+  if (req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return res.status(405).json({ error: "Method not allowed" }); }
   const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
   if (!message || message.length > 2000) return res.status(400).json({ error: "Сообщение должно содержать от 1 до 2000 символов." });
   if (!process.env.LLM_API_KEY || !process.env.LLM_BASE_URL || !process.env.LLM_MODEL) return res.status(503).json({ error: "ИИ ещё не подключён. Настройте LLM_API_KEY, LLM_BASE_URL и LLM_MODEL в серверных переменных окружения." });
