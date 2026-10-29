@@ -2,6 +2,12 @@
 
 A mobile-first Russian-language virtual companion prototype with an iPhone-friendly interface, server-side LLM adapter, anonymous signed sessions, PostgreSQL memory, and API safeguards.
 
+## Live preview
+
+Latest deployed preview: https://virtual-girlfriend-97bm91sxn-xxx01po.vercel.app
+
+The preview is deployed, but a working AI conversation still requires an `LLM_API_KEY` from a compatible provider. The database connection and session signing configuration have been added to Vercel; schema tables are created idempotently when the first session initializes. Verify `/api/health` after opening the site.
+
 ## Current implementation
 
 - Static mobile UI in `index.html`; designed for Safari and small screens.
