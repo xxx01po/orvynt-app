@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { neon } from "@neondatabase/serverless";
 import { clearCookie, makeCookie, newSessionId, sessionFromCookie } from "../lib/session";
+import { ensureSchema } from "../lib/schema";
 
 function db() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not configured");
@@ -17,14 +18,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   if (req.method === "GET") {
     try {
+      const sql = db();
+      await ensureSchema(sql);
       const existing = sessionFromCookie(req.headers.cookie);
       if (existing) {
-        const sql = db();
         const rows = await sql`SELECT id FROM vg_sessions WHERE id = ${existing}::uuid`;
         if (rows.length) return res.status(200).json({ ok: true });
       }
       const id = newSessionId();
-      const sql = db();
       await sql`INSERT INTO vg_sessions (id) VALUES (${id}::uuid) ON CONFLICT (id) DO NOTHING`;
       res.setHeader("Set-Cookie", makeCookie(id));
       return res.status(200).json({ ok: true });
