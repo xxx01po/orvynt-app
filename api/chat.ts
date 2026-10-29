@@ -79,7 +79,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const raw = data?.choices?.[0]?.message?.content;
     if (typeof raw !== "string") return res.status(502).json({ error: "ИИ вернул пустой ответ." });
     let parsed: any;
-    try { parsed = JSON.parse(raw); } catch { return res.status(502).json({ error: "Не удалось обработать ответ ИИ." }); }
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      const jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);
+      if (!jsonMatch) return res.status(502).json({ error: "Не удалось обработать ответ ИИ." });
+      try { parsed = JSON.parse(jsonMatch[0]); }
+      catch { return res.status(502).json({ error: "Не удалось обработать ответ ИИ." }); }
+    }
     const reply = typeof parsed.reply === "string" ? parsed.reply.slice(0, 6000) : "";
     const emotion = allowedEmotions.has(parsed.emotion) ? parsed.emotion : "calm";
     if (!reply) return res.status(502).json({ error: "ИИ вернул пустой ответ." });
