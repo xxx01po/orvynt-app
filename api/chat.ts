@@ -68,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           { role: "user", content: message }
         ]
       }),
-      signal: AbortSignal.timeout(25000)
+      signal: AbortSignal.timeout(50000)
     });
     if (!upstream.ok) {
       console.error("LLM provider status", upstream.status);
