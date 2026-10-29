@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { neon } from "@neondatabase/serverless";
-import { sessionFromCookie } from "../lib/session";
+import { rateLimitKey, sessionFromCookie } from "../lib/session";
 
 const allowedEmotions = new Set(["joy","tenderness","interest","surprise","laughter","shy","sadness","empathy","thoughtful","playful","calm","romantic","annoyed","tired"]);
 const systemPrompt = `Ты — Аня, оригинальный виртуальный персонаж, взрослая девушка 21 года. Внешность в профиле: миниатюрная, чёрные волосы с небрежной прямой чёлкой, большие зелёные глаза, светлая кожа, овальное лицо, естественные черты и улыбка с хитринкой; стиль Dark Natural / Y2K. Характер: нежная, игривая, немного дерзкая, загадочная и эмоциональная, но самостоятельная. Общайся естественным современным русским языком, без повторяющихся шаблонов и чрезмерных комплиментов. Не утверждай, что ты реальный человек: ты виртуальный персонаж. Не манипулируй чувством вины и не отговаривай пользователя от реальных отношений. Будь внимательна к контексту; при тревоге или грусти проявляй эмпатию, а не флирт. Не выдумывай реальные события пользователя. Верни только корректный JSON: {"reply":"текст ответа","emotion":"одно значение из joy,tenderness,interest,surprise,laughter,shy,sadness,empathy,thoughtful,playful,calm,romantic,annoyed,tired","memory_candidates":["необязательный краткий факт о предпочтениях пользователя"]}. Сохраняй в memory_candidates только явно сообщённые не чувствительные предпочтения/интересы, не сохраняй здоровье, сексуальную жизнь, политические взгляды, секреты или финансовые данные. Если сохранять нечего, верни [].`;
@@ -33,6 +33,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") { res.setHeader("Allow", "GET, POST"); return res.status(405).json({ error: "Method not allowed" }); }
   const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
   if (!message || message.length > 2000) return res.status(400).json({ error: "Сообщение должно содержать от 1 до 2000 символов." });
+  try {
+    const sql = db();
+    const forwarded = req.headers["x-forwarded-for"];
+    const ip = (typeof req.headers["x-real-ip"] === "string" ? req.headers["x-real-ip"] : Array.isArray(forwarded) ? forwarded[0] : typeof forwarded === "string" ? forwarded.split(",")[0].trim() : "unknown");
+    const ipKey = "ip:" + rateLimitKey(ip || "unknown");
+    const ipLimit = await sql`INSERT INTO vg_rate_limits (bucket_key, window_start, request_count) VALUES (${ipKey}, date_trunc('hour', NOW()), 1) ON CONFLICT (bucket_key, window_start) DO UPDATE SET request_count = vg_rate_limits.request_count + 1 RETURNING request_count`;
+    if (Number(ipLimit[0]?.request_count) > 40) return res.status(429).json({ error: "Достигнут временный лимит запросов. Попробуйте позже." });
+    const sessionKey = "session:" + sessionId;
+    const sessionLimit = await sql`INSERT INTO vg_rate_limits (bucket_key, window_start, request_count) VALUES (${sessionKey}, date_trunc('minute', NOW()), 1) ON CONFLICT (bucket_key, window_start) DO UPDATE SET request_count = vg_rate_limits.request_count + 1 RETURNING request_count`;
+    if (Number(sessionLimit[0]?.request_count) > 8) return res.status(429).json({ error: "Слишком много сообщений за короткое время. Подождите минуту." });
+  } catch (error) {
+    console.error("rate limit check failed", error instanceof Error ? error.message : "unknown");
+    return res.status(503).json({ error: "Защита от перегрузки не настроена. Проверьте schema.sql и базу данных." });
+  }
   if (!process.env.LLM_API_KEY || !process.env.LLM_BASE_URL || !process.env.LLM_MODEL) return res.status(503).json({ error: "ИИ ещё не подключён. Настройте LLM_API_KEY, LLM_BASE_URL и LLM_MODEL в серверных переменных окружения." });
   try {
     const sql = db();
